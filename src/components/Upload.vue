@@ -101,7 +101,7 @@ const handleExceed = (files) => {
   }
 }
 // 处理移除文件时候的操作
-const handleRemove=(file)=>{
+const handleRemove=()=>{
   fd.delete('file')
 }
 
@@ -122,7 +122,6 @@ const submitForm = (formEl) => {
       }
       // todo 做一个限流处理
       ElMessage.error('请选择上传文件！');
-      return
     } else {
       return false
     }
