@@ -1,15 +1,10 @@
 <template>
-  <router-view></router-view>
+  <HomePage></HomePage>
 </template>
 
 <script setup>
-import HelloWorld from '@/components/HelloWorld.vue'
-
-
+import HomePage from "@/views/HomePage.vue";
 </script>
 
-
-
 <style scoped>
-
 </style>

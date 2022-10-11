@@ -59,6 +59,7 @@
 <script lang="ts" setup>
 import {inject, onMounted, reactive, ref, watch} from "vue";
 import {ElMessage, genFileId} from "element-plus";
+import { throttle } from 'lodash'
 
 const axios = inject("axios")
 // 后台返回的数据
@@ -105,7 +106,7 @@ const handleRemove=()=>{
   fd.delete('file')
 }
 
-const submitForm = (formEl) => {
+const submitForm =throttle((formEl) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
@@ -120,13 +121,13 @@ const submitForm = (formEl) => {
           return
         }
       }
-      // todo 做一个限流处理
+      // todo 做一个限流处理 和节流
       ElMessage.error('请选择上传文件！');
     } else {
       return false
     }
   })
-}
+},50000)
 
 const resetForm = (formEl) => {
   if (!formEl) return
