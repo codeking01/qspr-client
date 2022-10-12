@@ -3,8 +3,6 @@
   <el-container class="layout-container-demo" style="height: 620px">
     <el-aside width="200px">
       <el-scrollbar>
-        <!-- todo 用mitt插件直接组件通信   -->
-        <!-- todo 子组件传递内容给父组件，然后再将获取的内容传递给 子组件form-table  -->
         <side-bar/>
       </el-scrollbar>
     </el-aside>
@@ -41,13 +39,12 @@ import SideBar from "@/components/SideBar/index.vue";
 import FormTable from "@/components/FormTable/index.vue";
 import {reactive} from "vue";
 
+
 const TableProperty = reactive({
   model: '',
   name: 'my-dialog',
 })
 
-// 根据侧栏选择的模型传递组件内容
-TableProperty.model = ""
 </script>
 
 <style scoped>

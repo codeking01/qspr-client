@@ -74,22 +74,21 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import {inject, onMounted, reactive, ref, watch} from 'vue'
 import {ElMessage, genFileId} from 'element-plus'
 import {throttle} from 'lodash';
 import {useRouter} from "vue-router";
-// //  接受父组件传递过来需要渲染的表属性
-// const props = defineProps({
-//   TableProperty: Object,
-//   // test: Object,
-// })
+import my_mitt from "@/utils/Mitt/my_mitt.js";
 let TableProperty=reactive({
   'model': '未选择模型',
 })
 // 计算饱和蒸汽压和一部分特殊的模型的时候才需要温度沸点的,点击模型的时候，会修改这个属性内容
-defineExpose({
-  TableProperty
+onMounted(()=>{
+  my_mitt.on('selectModel',data => {
+    // console.log('****',data)
+    TableProperty.model = data
+  })
 })
 
 const axios = inject("axios")
@@ -114,7 +113,7 @@ watch(add_form, () => {
 const handleChange = async (file) => {
   if (file.name.split('.')[1] !== 'gjf') {
     ElMessage.error('只能上传Gjf格式的文件');//限制文件类型
-    uploadFile.value!.clearFiles()
+    uploadFile.value.clearFiles()
   } else {
     fd.set('file', file.raw)
   }
@@ -123,12 +122,12 @@ const handleChange = async (file) => {
 const handleExceed = (files) => {
   if (files[0].name.split('.')[1] !== 'gjf') {
     ElMessage.error('只能上传Gjf格式的文件');//限制文件类型
-    uploadFile.value!.clearFiles()
+    uploadFile.value.clearFiles()
   } else {
-    uploadFile.value!.clearFiles()
+    uploadFile.value.clearFiles()
     const file = files[0]
     file.uid = genFileId()
-    uploadFile.value!.handleStart(file)
+    uploadFile.value.handleStart(file)
   }
 }
 // 处理移除文件时候的操作
@@ -163,11 +162,11 @@ const submitForm = throttle((formEl) => {
 const resetForm = (formEl) => {
   if (!formEl) return
   formEl.resetFields()
-  uploadFile.value!.clearFiles()
+  uploadFile.value.clearFiles()
   fd.delete('file')
 }
 
-const handleSelect = (key: string, keyPath: string[]) => {
+const handleSelect = (key , keyPath ) => {
   // console.log(key, keyPath)
   // 处理处理路由
   router.push({path: key, query: {id: 10}})

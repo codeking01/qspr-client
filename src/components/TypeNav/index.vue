@@ -21,7 +21,6 @@
       </el-sub-menu>
     </el-sub-menu>
   </el-menu>
-
 </template>
 
 <script setup>

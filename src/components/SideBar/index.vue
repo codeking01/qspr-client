@@ -1,5 +1,5 @@
 <template>
-  <el-menu :default-openeds="['1', '3']" @select="handleSelect">
+  <el-menu :default-openeds="['1']" @select="handleSelect">
     <el-sub-menu index="1">
       <template #title>
         <el-icon>
@@ -65,13 +65,17 @@
   </el-menu>
 </template>
 
-<script lang="ts" setup>
-import {ref} from 'vue'
+<script setup>
 import {Menu as IconMenu, Message, Setting} from "@element-plus/icons-vue"
-const handleSelect = (key: string, keyPath: string[]) => {
+import my_mitt from "@/utils/Mitt/my_mitt.js"
+import nprogress from "@/utils/nprogress/mynprogress.js"
+const handleSelect = (key, keyPath) => {
   // 组件通信
-  TableProperty.model=keyPath[1]
-  console.log(keyPath[1]);
+  nprogress.start();
+  my_mitt.emit("selectModel",keyPath)
+  nprogress.done();
+  // TableProperty.model = keyPath[1]
+  console.log(keyPath);
 }
 </script>
 
