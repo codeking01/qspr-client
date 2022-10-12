@@ -2,31 +2,38 @@
   <div class="form_table">
     <el-card class="box-card" shadow="always">
       <template #header>
-        <div class="card-header">
-          <span>{{ TableProperty.model }}</span>
-        </div>
+        <el-breadcrumb separator="/" v-show="TableProperty.flag">
+          <!--          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>-->
+          <el-breadcrumb-item>{{ TableProperty.category }}</el-breadcrumb-item>
+          <el-breadcrumb-item>
+            <!--            <a href="#">{{ TableProperty.property }}</a>-->
+            {{ TableProperty.property }}
+          </el-breadcrumb-item>
+          <el-breadcrumb-item>{{ TableProperty.model }}</el-breadcrumb-item>
+        </el-breadcrumb>
+        <el-breadcrumb v-show="!TableProperty.flag">
+          首页展示
+        </el-breadcrumb>
       </template>
-      <el-form ref="formRef" :model="add_form" label-width="80px" class=""
-               size="large"
+      <el-form ref="formRef" :model="add_form" label-width="80px"
+               size="default"
                label-position="right">
-        <el-form-item label="温度" prop="temperature" :rules="[
-                          { required: true, message: '这个是必填的！' },
-                          { type: 'number', message: '请输入数字！' },]"
-        >
-          <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
-                    input-style="width :150px"/>
-        </el-form-item>
-        <el-form-item label="沸点" prop="boiling_point" :rules="[
-                          { required: true, message: '这个是必填的！' },
-                          { type: 'number', message: '请输入数字！' },]"
-        >
+
+        <el-form-item v-if="isShow('boiling_point')" label="沸点" prop="boiling_point" :rules="rules">
           <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"
                     input-style="width :150px"/>
         </el-form-item>
-        <el-form-item class="upload-button" style="text-align: left" label="gjf文件" :rules="[
-                          { required: true, message: '请选择文件' },
-                          { type: 'file', message: '请选择文件' },]"
-        >
+        <el-form-item v-if="isShow('temperature')"  label="温度" prop="temperature" :rules="rules">
+          <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
+                    input-style="width :150px"/>
+        </el-form-item>
+        <el-form-item v-if="isShow('pressure')"  label="压力" prop="pressure" :rules="rules">
+          <el-input v-model.number="add_form.pressure" type="text" autocomplete="off"
+                    input-style="width :150px"/>
+        </el-form-item>
+
+        <!--上传gjf是每个模型都必须的 -->
+        <el-form-item class="upload-button" style="text-align: left" label="gjf文件">
           <el-upload
               style="width: 150px"
               ref="uploadFile"
@@ -47,7 +54,6 @@
             </template>
           </el-upload>
         </el-form-item>
-
         <el-form-item>
           <el-button type="primary" @click="submitForm(formRef)">提交</el-button>
           <el-button @click="resetForm(formRef)">重置</el-button>
@@ -58,7 +64,7 @@
             title=""
             direction="vertical"
             :column="4"
-            size="large"
+            size="default"
             :limit="1"
             border
         >
@@ -78,19 +84,24 @@
 import {inject, onMounted, reactive, ref, watch} from 'vue'
 import {ElMessage, genFileId} from 'element-plus'
 import {throttle} from 'lodash';
-import {useRouter} from "vue-router";
+// import {useRouter} from "vue-router";
 import my_mitt from "@/utils/Mitt/my_mitt.js";
-let TableProperty=reactive({
-  'model': '未选择模型',
+
+let TableProperty = reactive({
+  'category': '',
+  'property': '',
+  'model': '',
+  'compute_property': ['boiling_point', 'temperature'],
+  'flag': false,
 })
 // 计算饱和蒸汽压和一部分特殊的模型的时候才需要温度沸点的,点击模型的时候，会修改这个属性内容
-onMounted(()=>{
-  my_mitt.on('selectModel',data => {
-    // console.log('****',data)
-    TableProperty.model = data
-  })
-})
-
+const isShow = (property) => {
+  // console.log(TableProperty.compute_property.indexOf(property))
+  if (TableProperty.compute_property.indexOf(property) == -1) {
+    return false;
+  }
+  return true;
+}
 const axios = inject("axios")
 // 后台返回的数据
 const Pred_result = ref()
@@ -98,17 +109,25 @@ const Pred_result = ref()
 const uploadFile = ref()
 // 用来校验表单
 const formRef = ref()
-const router = useRouter()
+// const router = useRouter()
 
+// todo 将TableProperty的compute_property赋值给add_form
 const add_form = reactive({
-  temperature: null,
   boiling_point: null,
+  temperature: null,
+  pressure: null
 })
+
+
 let fd = reactive(new FormData())
 watch(add_form, () => {
-  fd.set('temperature', add_form.temperature)
   fd.set('boiling_point', add_form.boiling_point)
+  fd.set('temperature', add_form.temperature)
+  fd.set('pressure', add_form.pressure)
 })
+const rules = [
+  {required: true, message: '这个是必填的！'},
+  {type: 'number', message: '请输入数字！'},]
 
 const handleChange = async (file) => {
   if (file.name.split('.')[1] !== 'gjf') {
@@ -118,6 +137,7 @@ const handleChange = async (file) => {
     fd.set('file', file.raw)
   }
 }
+
 // 覆盖上一个文件
 const handleExceed = (files) => {
   if (files[0].name.split('.')[1] !== 'gjf') {
@@ -158,7 +178,6 @@ const submitForm = throttle((formEl) => {
   })
 }, 500)
 
-
 const resetForm = (formEl) => {
   if (!formEl) return
   formEl.resetFields()
@@ -166,15 +185,32 @@ const resetForm = (formEl) => {
   fd.delete('file')
 }
 
-const handleSelect = (key , keyPath ) => {
-  // console.log(key, keyPath)
-  // 处理处理路由
-  router.push({path: key, query: {id: 10}})
-}
+
+// const handleSelect = (key, keyPath) => {
+//   // console.log(key, keyPath)
+//   // 处理处理路由
+//   router.push({path: key, query: {id: 10}})
+// }
 
 onMounted(() => {
-  fd.set('temperature', add_form.temperature)
-  fd.set('boiling_point', add_form.boiling_point)
+  // for (let item of TableProperty.compute_property) {
+  //   let property = Object.keys(item)[0]
+  // }
+  // 将TableProperty的compute_property依次赋值
+  for (let item of TableProperty.compute_property) {
+    let property = Object.keys(item)[0]
+    fd.set(`${property}`, '')
+  }
+  // fd.set('boiling_point', add_form.boiling_point)
+  // fd.set('temperature', add_form.temperature)
+  // console.log('*****',fd)
+  my_mitt.on('selectModel', data => {
+    TableProperty.flag = true;
+    // console.log('****',data)
+    TableProperty.category = data[0]
+    TableProperty.property = data[1]
+    TableProperty.model = data[2]
+  })
 })
 </script>
 
