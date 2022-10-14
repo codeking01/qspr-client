@@ -41,7 +41,7 @@
               :on-exceed="handleExceed"
               :on-change="handleChange"
               :on-remove="handleRemove"
-              accept=".gjf"
+              accept=".gjf,.mol"
               class="left-view"
               :auto-upload="false"
           >

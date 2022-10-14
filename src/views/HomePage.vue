@@ -1,31 +1,14 @@
 <template>
+
   <type-nav/>
   <el-container class="layout-container-demo" style="height: 600px">
     <el-aside width="200px">
+
       <el-scrollbar>
         <side-bar/>
       </el-scrollbar>
     </el-aside>
     <el-container>
-<!--      <el-header style="text-align: right; font-size: 12px">-->
-<!--        <div class="toolbar">-->
-<!--          <el-dropdown>-->
-<!--            <el-icon style="margin-right: 8px; margin-top: 1px"-->
-<!--            >-->
-<!--              <setting-->
-<!--              />-->
-<!--            </el-icon>-->
-<!--            <template #dropdown>-->
-<!--              <el-dropdown-menu>-->
-<!--                <el-dropdown-item>查看</el-dropdown-item>-->
-<!--                <el-dropdown-item>添加</el-dropdown-item>-->
-<!--                <el-dropdown-item>删除</el-dropdown-item>-->
-<!--              </el-dropdown-menu>-->
-<!--            </template>-->
-<!--          </el-dropdown>-->
-<!--          <span>Tom</span>-->
-<!--        </div>-->
-<!--      </el-header>-->
       <el-main>
         <form-table/>
       </el-main>

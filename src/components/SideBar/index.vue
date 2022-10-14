@@ -73,6 +73,7 @@ import {reactive, ref} from "vue";
 
 const property = ref('结合常数(β-CD)')
 
+// todo 请求后台接口，获取导航栏数据
 const typeNav = reactive({
   // categoryList: [{conventional_organics: [{boiling_point: [{QSPR:''}]}]},]
   categoryList: [{'conventional_organics':[]}, {'Cyclodextrin':[]},{'Ionic_liquid':[]}]
