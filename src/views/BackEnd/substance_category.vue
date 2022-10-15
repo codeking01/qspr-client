@@ -139,7 +139,7 @@ const edit_category_name = async () => {
   }
 }
 
-const handlePropertyDelete = async (index, row) => {
+const handleCategoryDelete = async (index, row) => {
   // console.log('id ', row.id)
   let result = await axios.post('/backend/category/del_category?id=' + row.id)
   if (result.status == 200) {
@@ -158,7 +158,7 @@ const handleAdd = async (index, row) => {
   dialogFormVisible.value = true;
 }
 
-const add_property = async () => {
+const add_substance_category = async () => {
   let result = await axios.post('/backend/category/add_category', form)
   if (result.status == 200) {
     form.substance_name = ''

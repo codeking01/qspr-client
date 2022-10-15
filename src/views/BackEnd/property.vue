@@ -191,6 +191,7 @@ const AddProperty = async (index, row) => {
 }
 
 const add_property = async () => {
+  console.log('ss')
   let result = await axios.post('/backend/property/add_property', form)
   if (result.status == 200) {
     form.property_name = ''
