@@ -1,9 +1,7 @@
 <template>
-
   <type-nav/>
   <el-container class="layout-container-demo" style="height: 600px">
     <el-aside width="200px">
-
       <el-scrollbar>
         <side-bar/>
       </el-scrollbar>

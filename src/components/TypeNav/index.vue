@@ -6,7 +6,12 @@
       :ellipsis="false"
       @select="handleSelect"
   >
-    <el-menu-item index="0">QSAR-LAB</el-menu-item>
+      <el-menu-item index="/">
+        QSAR-LAB
+      </el-menu-item>
+      <el-menu-item index="/backend">
+        后台
+      </el-menu-item>
     <div class="flex-grow"/>
     <el-sub-menu index="1">
       <template #title>画图</template>
@@ -27,9 +32,10 @@
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 const router=useRouter()
-const activeIndex = ref('0')
+const activeIndex = ref('/')
 const handleSelect = (key  ,keyPath ) => {
-  router.push({path: key, query: {id: 10}})
+  // router.push({path: key, query: {id: 10}})
+  router.push({path: key})
 }
 </script>
 
