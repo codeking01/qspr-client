@@ -117,7 +117,7 @@ const edit_form = reactive({
 const tableData = ref([])
 
 // 编辑物质
-const handlePropertyEdit = async (index, row) => {
+const handleCategoryEdit = async (index, row) => {
   // console.log(row)
   // 弹出编辑对话框
   edit_form.category_name = row.category_name;
