@@ -167,7 +167,7 @@ const edit_property = async () => {
     EditDialogFormVisible.value = false;
     success_tip(result.data.msg);
     await loadTableData()
-    await loadSubstance()
+    await loadProperty()
   }
 }
 
@@ -178,7 +178,7 @@ const handlePropertyDelete = async (index, row) => {
     dialogFormVisible.value = false;
     success_tip(result.data.msg);
     await loadTableData()
-    await loadSubstance()
+    await loadProperty()
   }
 }
 
@@ -200,7 +200,7 @@ const add_property = async () => {
     dialogFormVisible.value = false;
     success_tip(result.data.msg);
     await loadTableData()
-    await loadSubstance()
+    await loadProperty()
   }
 }
 
@@ -212,7 +212,7 @@ const loadTableData = async () => {
   // console.log(tableData.value)
 }
 // 根据不同的id，加载物质
-const loadSubstance = async () => {
+const loadProperty = async () => {
   // console.log("tablevalue", tableData.value)
   // 物质
   for (let index in tableData.value) {
@@ -241,7 +241,7 @@ const loadSubstance = async () => {
 
 onMounted(async () => {
   await loadTableData()
-  await loadSubstance()
+  await loadProperty()
 })
 
 </script>

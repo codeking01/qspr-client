@@ -18,7 +18,6 @@
 import TypeNav from "@/components/TypeNav/index.vue";
 import SideBar from "@/components/SideBar/index.vue";
 import FormTable from "@/components/FormTable/index.vue";
-
 </script>
 
 <style scoped>

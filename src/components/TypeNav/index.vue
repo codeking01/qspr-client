@@ -5,38 +5,61 @@
       mode="horizontal"
       :ellipsis="false"
       @select="handleSelect"
+      menu-trigger="hover"
+      show-timeout="10"
   >
-      <el-menu-item index="/">
-        QSAR-LAB
-      </el-menu-item>
-      <el-menu-item index="/backend">
-        后台
-      </el-menu-item>
-    <div class="flex-grow"/>
-    <el-sub-menu index="1">
-      <template #title>画图</template>
-      <el-menu-item index="1-1">item one</el-menu-item>
-      <el-menu-item index="1-2">item two</el-menu-item>
-      <el-menu-item index="1-3">item three</el-menu-item>
-      <el-sub-menu index="1-4">
-        <template #title>item four</template>
-        <el-menu-item index="1-4-1">item one</el-menu-item>
-        <el-menu-item index="1-4-2">item two</el-menu-item>
-        <el-menu-item index="1-4-3">item three</el-menu-item>
-      </el-sub-menu>
+<!--    <el-menu-item index="/">-->
+<!--      QSPR-LAB-->
+<!--    </el-menu-item>-->
+    <el-sub-menu index="#">
+      <template #title>{{ selectModel.Name }}</template>
+      <div v-for="(item,index) in selectModel.calculateModel.calculate_model">
+        <el-menu-item :index="item.id" @click="toSelectModel(item)">{{ item.model_name }}</el-menu-item>
+      </div>
     </el-sub-menu>
+    <div class="flex-grow"/>
+    <el-menu-item index="/backend/compute_model">
+      后台
+    </el-menu-item>
   </el-menu>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-const router=useRouter()
+import {useCalculateModel} from "@/stores/TabNavStore.js"
+import my_mitt from "@/utils/Mitt/my_mitt.js";
+
+const calculateModel = useCalculateModel()
+const router = useRouter()
 const activeIndex = ref('/')
-const handleSelect = (key  ,keyPath ) => {
+let selectModel = reactive({
+  Name: "选择模型",
+  calculateModel: {},
+  typeNavList: {},
+});
+const handleSelect = (key, keyPath) => {
   // router.push({path: key, query: {id: 10}})
-  router.push({path: key})
+  if (keyPath[0] !== '#') {
+    router.push({path: key})
+  }
+  console.log('key和keyPath:' + key, keyPath)
 }
+// 选择计算模型的方法
+const toSelectModel = async (item) => {
+  selectModel.Name = item.model_name
+  // 根据选择模型的id 发送请求查找内容（查找三级菜单的内容）
+  await calculateModel.loadTypeNavList(item.id)
+  selectModel.typeNavList = calculateModel.typeNavList
+  // console.log('typeNavList',selectModel.typeNavList)
+  // 组件通信，更改侧边导航栏数据
+  my_mitt.emit("sideBarData", selectModel.typeNavList)
+}
+
+onMounted(async () => {
+  await calculateModel.loadCalculateModel()
+  selectModel.calculateModel = calculateModel.calculate_model
+})
 </script>
 
 <style scoped lang="less">

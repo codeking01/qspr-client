@@ -1,33 +1,28 @@
 <template>
-  <div class="form_table">
+  <div v-show="!TableProperty.flag">
+    <show-home/>
+  </div>
+  <div class="form_table" v-show="TableProperty.flag">
     <el-card class="box-card" shadow="always">
       <template #header>
         <el-breadcrumb separator="/" v-show="TableProperty.flag">
-          <!--          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>-->
           <el-breadcrumb-item>{{ TableProperty.category }}</el-breadcrumb-item>
           <el-breadcrumb-item>
-            <!--            <a href="#">{{ TableProperty.property }}</a>-->
             {{ TableProperty.property }}
           </el-breadcrumb-item>
           <el-breadcrumb-item>{{ TableProperty.model }}</el-breadcrumb-item>
         </el-breadcrumb>
-        <el-breadcrumb v-show="!TableProperty.flag">
-          首页展示
-        </el-breadcrumb>
       </template>
-      <el-form ref="formRef" :model="add_form" label-width="80px"
-               size="default"
-               label-position="right">
-
+      <el-form ref="formRef" :model="add_form" label-width="80px" size="default" label-position="right">
         <el-form-item v-if="isShow('boiling_point')" label="沸点" prop="boiling_point" :rules="rules">
           <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"
                     input-style="width :150px"/>
         </el-form-item>
-        <el-form-item v-if="isShow('temperature')"  label="温度" prop="temperature" :rules="rules">
+        <el-form-item v-if="isShow('temperature')" label="温度" prop="temperature" :rules="rules">
           <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
                     input-style="width :150px"/>
         </el-form-item>
-        <el-form-item v-if="isShow('pressure')"  label="压力" prop="pressure" :rules="rules">
+        <el-form-item v-if="isShow('pressure')" label="压力" prop="pressure" :rules="rules">
           <el-input v-model.number="add_form.pressure" type="text" autocomplete="off"
                     input-style="width :150px"/>
         </el-form-item>
@@ -63,13 +58,20 @@
         <el-descriptions
             title=""
             direction="vertical"
-            :column="4"
+            :column="5"
             size="default"
             :limit="1"
             border
         >
-          <el-descriptions-item label="温度（Kpa）">{{ Pred_result.temperature }}</el-descriptions-item>
-          <el-descriptions-item label="沸点（Kpa）">{{ Pred_result.boiling_point }}</el-descriptions-item>
+          <el-descriptions-item label="沸点（Kpa）" v-if="isShow('boiling_point')">
+            {{ Pred_result.boiling_point }}
+          </el-descriptions-item>
+          <el-descriptions-item label="温度（Kpa）" v-if="isShow('temperature')">
+            {{ Pred_result.temperature }}
+          </el-descriptions-item>
+          <el-descriptions-item label="压力（Kpa）" v-if="isShow('pressure')">
+            {{ Pred_result.pressure }}
+          </el-descriptions-item>
           <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
           <el-descriptions-item label="结果">
             {{ Pred_result.p_cul }}
@@ -84,24 +86,17 @@
 import {inject, onMounted, reactive, ref, watch} from 'vue'
 import {ElMessage, genFileId} from 'element-plus'
 import {throttle} from 'lodash';
-// import {useRouter} from "vue-router";
 import my_mitt from "@/utils/Mitt/my_mitt.js";
+import {getCyclodextrin, getSaturatedVaporPressure} from "@/api/index.js";
+import ShowHome from "@/components/ShowHome/index.vue";
 
 let TableProperty = reactive({
   'category': '',
   'property': '',
   'model': '',
-  'compute_property': ['boiling_point', 'temperature'],
+  'compute_property': [],
   'flag': false,
 })
-// 计算饱和蒸汽压和一部分特殊的模型的时候才需要温度沸点的,点击模型的时候，会修改这个属性内容
-const isShow = (property) => {
-  // console.log(TableProperty.compute_property.indexOf(property))
-  if (TableProperty.compute_property.indexOf(property) == -1) {
-    return false;
-  }
-  return true;
-}
 const axios = inject("axios")
 // 后台返回的数据
 const Pred_result = ref()
@@ -109,9 +104,7 @@ const Pred_result = ref()
 const uploadFile = ref()
 // 用来校验表单
 const formRef = ref()
-// const router = useRouter()
 
-// todo 将TableProperty的compute_property赋值给add_form
 const add_form = reactive({
   boiling_point: null,
   temperature: null,
@@ -120,6 +113,14 @@ const add_form = reactive({
 
 
 let fd = reactive(new FormData())
+// 计算饱和蒸汽压和一部分特殊的模型的时候才需要温度沸点的,点击模型的时候，会修改这个属性内容
+const isShow = (property) => {
+  if (TableProperty.compute_property.indexOf(property) == -1) {
+    return false;
+  }
+  return true;
+}
+
 watch(add_form, () => {
   fd.set('boiling_point', add_form.boiling_point)
   fd.set('temperature', add_form.temperature)
@@ -131,7 +132,7 @@ const rules = [
 
 const handleChange = async (file) => {
   if (file.name.split('.')[1] !== 'gjf') {
-    ElMessage.error('只能上传Gjf格式的文件');//限制文件类型
+    ElMessage.error('只能上传Gjf或者mol格式的文件');//限制文件类型
     uploadFile.value.clearFiles()
   } else {
     fd.set('file', file.raw)
@@ -141,7 +142,7 @@ const handleChange = async (file) => {
 // 覆盖上一个文件
 const handleExceed = (files) => {
   if (files[0].name.split('.')[1] !== 'gjf') {
-    ElMessage.error('只能上传Gjf格式的文件');//限制文件类型
+    ElMessage.error('只能上传Gjf或者mol格式的文件');//限制文件类型
     uploadFile.value.clearFiles()
   } else {
     uploadFile.value.clearFiles()
@@ -161,14 +162,9 @@ const submitForm = throttle((formEl) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (fd.get('file') !== null) {
-        let result = await axios.post('/OrganicMatter/SaturatedVaporPressure', fd)
-        // console.log(result.data.result)
-        if (result.status == 200) {
-          Pred_result.value = result.data
-          // console.log(Pred_result.value)
-        } else {
-          // todo 返回有误处理
-        }
+        Pred_result.value =  await getSaturatedVaporPressure(fd)
+        // Pred_result.value =  await getCyclodextrin(1,fd)
+        // console.log('Pred_result.value',Pred_result.value)
       } else {
         ElMessage.error('请选择上传文件！');
       }
@@ -185,31 +181,19 @@ const resetForm = (formEl) => {
   fd.delete('file')
 }
 
-
-// const handleSelect = (key, keyPath) => {
-//   // console.log(key, keyPath)
-//   // 处理处理路由
-//   router.push({path: key, query: {id: 10}})
-// }
-
 onMounted(() => {
-  // for (let item of TableProperty.compute_property) {
-  //   let property = Object.keys(item)[0]
-  // }
-  // 将TableProperty的compute_property依次赋值
   for (let item of TableProperty.compute_property) {
     let property = Object.keys(item)[0]
     fd.set(`${property}`, '')
   }
-  // fd.set('boiling_point', add_form.boiling_point)
-  // fd.set('temperature', add_form.temperature)
-  // console.log('*****',fd)
-  my_mitt.on('selectModel', data => {
+  my_mitt.on('selectProperty', data => {
+    // console.log('data', data)
     TableProperty.flag = true;
     // console.log('****',data)
-    TableProperty.category = data[0]
-    TableProperty.property = data[1]
-    TableProperty.model = data[2]
+    TableProperty.category = data.substance_name;
+    TableProperty.property = data.category_name;
+    TableProperty.model = data.Property_item.property_name;
+    TableProperty.compute_property = data.Property_item.compute_name;
   })
 })
 </script>
