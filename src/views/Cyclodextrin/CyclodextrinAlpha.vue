@@ -1,32 +1,14 @@
 <template>
   <div class="container">
-    <div class="home-index" v-show="!TableProperty.flag">
-      <show-home/>
-    </div>
-    <div class="form_table" v-show="TableProperty.flag">
+    <div class="form_table">
       <el-card class="box-card" shadow="always">
         <template #header>
-          <el-breadcrumb separator="/" v-show="TableProperty.flag">
+          <el-breadcrumb separator="/">
             <el-breadcrumb-item>{{ TableProperty.category }}</el-breadcrumb-item>
-            <el-breadcrumb-item>
-              {{ TableProperty.property }}
-            </el-breadcrumb-item>
             <el-breadcrumb-item>{{ TableProperty.model }}</el-breadcrumb-item>
           </el-breadcrumb>
         </template>
         <el-form ref="formRef" :model="add_form" label-width="80px" size="default" label-position="right">
-          <el-form-item v-if="isShow('boiling_point')" label="沸点" prop="boiling_point" :rules="rules">
-            <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"
-                      input-style="width :150px"/>
-          </el-form-item>
-          <el-form-item v-if="isShow('temperature')" label="温度" prop="temperature" :rules="rules">
-            <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
-                      input-style="width :150px"/>
-          </el-form-item>
-          <el-form-item v-if="isShow('pressure')" label="压力" prop="pressure" :rules="rules">
-            <el-input v-model.number="add_form.pressure" type="text" autocomplete="off"
-                      input-style="width :150px"/>
-          </el-form-item>
 
           <!--上传gjf是每个模型都必须的 -->
           <el-form-item class="upload-button" style="text-align: left" label="gjf文件">
@@ -55,29 +37,37 @@
             <el-button @click="resetForm(formRef)">重置</el-button>
           </el-form-item>
         </el-form>
-        <predict-result/>
+        <!-- 计算结果 -->
+        <div class="result_table" v-if="Pred_result">
+          <el-descriptions
+              title=""
+              direction="vertical"
+              :column="5"
+              size="default"
+              :limit="1"
+              border
+          >
+            <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
+            <el-descriptions-item label="结果">
+              {{ Pred_result.p_cul['alpha_cul'] }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
       </el-card>
     </div>
   </div>
-
 </template>
 
 <script setup>
-import {inject, onActivated, onMounted, reactive, ref, watch} from 'vue'
+import {inject, nextTick, onMounted, reactive, ref, watch} from 'vue'
 import {ElMessage, genFileId} from 'element-plus'
 import {throttle} from 'lodash';
 import my_mitt from "@/utils/Mitt/my_mitt.js";
 import {getCyclodextrin, getSaturatedVaporPressure} from "@/api/index.js";
-import ShowHome from "@/components/ShowHome/index.vue";
-import PredictResult from "@/components/PredictResult/index.vue";
-
 let TableProperty = reactive({
-  'category': '',
-  'property': '',
-  'model': '',
   'compute_property': [],
-  'flag': false,
 })
+
 const axios = inject("axios")
 // 后台返回的数据
 const Pred_result = ref()
@@ -85,31 +75,22 @@ const Pred_result = ref()
 const uploadFile = ref()
 // 用来校验表单
 const formRef = ref()
-
 const add_form = reactive({
   boiling_point: null,
   temperature: null,
-  pressure: null
 })
-
-
 let fd = reactive(new FormData())
-// 计算饱和蒸汽压和一部分特殊的模型的时候才需要温度沸点的,点击模型的时候，会修改这个属性内容
-const isShow = (property) => {
-  return TableProperty.compute_property.indexOf(property) !== -1;
-}
-
 watch(add_form, () => {
   fd.set('boiling_point', add_form.boiling_point)
   fd.set('temperature', add_form.temperature)
-  fd.set('pressure', add_form.pressure)
 })
 const rules = [
   {required: true, message: '这个是必填的！'},
   {type: 'number', message: '请输入数字！'},]
 
+// 文件内容发生改变
 const handleChange = async (file) => {
-  if (file.name.split('.')[1] !== 'gjf'&& file.name.split('.')[1] !== 'mol') {
+  if (file.name.split('.')[1] !== 'gjf' && file.name.split('.')[1] !== 'mol') {
     ElMessage.error('只能上传Gjf或者mol格式的文件');//限制文件类型
     uploadFile.value.clearFiles()
   } else {
@@ -119,6 +100,7 @@ const handleChange = async (file) => {
 
 // 覆盖上一个文件
 const handleExceed = (files) => {
+
   if (files[0].name.split('.')[1] !== 'gjf' && files[0].name.split('.')[1] !== 'mol') {
     ElMessage.error('只能上传Gjf或者mol格式的文件');//限制文件类型
     uploadFile.value.clearFiles()
@@ -140,13 +122,7 @@ const submitForm = throttle((formEl) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (fd.get('file') !== null) {
-        Pred_result.value = await getSaturatedVaporPressure(fd)
-        // 显示结果
-        my_mitt.emit("showResult", true)
-        my_mitt.emit("predResult", Pred_result)
-        my_mitt.emit("TableProperty", TableProperty.compute_property)
-        // Pred_result.value =  await getCyclodextrin(1,fd)
-        // console.log('Pred_result.value',Pred_result.value)
+        Pred_result.value =  await getCyclodextrin(1,fd)
       } else {
         ElMessage.error('请选择上传文件！');
       }
@@ -163,14 +139,13 @@ const resetForm = (formEl) => {
   fd.delete('file')
 }
 
+
 onMounted(() => {
   for (let item of TableProperty.compute_property) {
     let property = Object.keys(item)[0]
     fd.set(`${property}`, '')
   }
-  my_mitt.on('selectProperty', data => {
-    // console.log('data', data)
-    TableProperty.flag = true;
+  my_mitt.on('selectProperty', async data => {
     // console.log('****',data)
     TableProperty.category = data.substance_name;
     TableProperty.property = data.category_name;
@@ -180,12 +155,8 @@ onMounted(() => {
 })
 </script>
 
-<style lang="less" scoped>
 
-.flex-grow {
-  flex-grow: 1;
-}
-
+<style scoped>
 .form_table {
   text-align: -webkit-center;
 }
@@ -207,7 +178,6 @@ onMounted(() => {
 
 .box-card {
   margin: 5px 5px;
-  //width: 800px;
   height: 585px;
 }
 </style>

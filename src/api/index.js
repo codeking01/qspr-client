@@ -54,7 +54,7 @@ export const getSaturatedVaporPressure = (data) =>
 // 计算环糊精α和β
 export const getCyclodextrin = (compute_model,data) =>
     requests({
-        url:`/OrganicMatter/Cyclodextrin?compute_model=${compute_model}`,
+        url:`/Cyclodextrin/Cyclodextrin?compute_model=${compute_model}`,
         method: 'POST',
         data
     }).then((response) => {

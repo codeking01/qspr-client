@@ -1,16 +1,21 @@
 <template>
   <type-nav/>
   <el-container class="layout-container-demo" style="height: 600px">
-    <el-aside width="200px">
-      <el-scrollbar>
-        <side-bar/>
-      </el-scrollbar>
-    </el-aside>
-    <el-container>
-      <el-main>
-        <form-table/>
-      </el-main>
-    </el-container>
+      <el-aside width="200px" v-show="flag">
+        <el-scrollbar>
+          <side-bar/>
+        </el-scrollbar>
+      </el-aside>
+      <el-container>
+        <el-main>
+          <form-table  v-show="!flag"/>
+          <div  v-show="Property_flag">
+            请选择左侧需要计算的预测属性！
+          </div>
+          <router-view/>
+        </el-main>
+      </el-container>
+
   </el-container>
 </template>
 
@@ -18,6 +23,17 @@
 import TypeNav from "@/components/TypeNav/index.vue";
 import SideBar from "@/components/SideBar/index.vue";
 import FormTable from "@/components/FormTable/index.vue";
+import {ref} from "vue";
+import my_mitt from "@/utils/Mitt/my_mitt.js";
+const flag = ref(false)
+const Property_flag = ref(true)
+my_mitt.on("changeFlag",data=>{
+  flag.value=data.flag
+})
+my_mitt.on("ChangePropertyFlag",data=>{
+  Property_flag.value=data.Property_flag
+})
+
 </script>
 
 <style scoped>
@@ -50,7 +66,6 @@ import FormTable from "@/components/FormTable/index.vue";
 
 .form_table {
   text-align: -webkit-center;
-
 }
 
 .upload-button {

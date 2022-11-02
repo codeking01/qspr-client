@@ -8,15 +8,16 @@
       menu-trigger="hover"
       show-timeout="10"
   >
-<!--    <el-menu-item index="/">-->
-<!--      QSPR-LAB-->
-<!--    </el-menu-item>-->
+    <!--    <el-menu-item index="/">
+      QSPR-LAB
+    </el-menu-item>-->
     <el-sub-menu index="#">
       <template #title>{{ selectModel.Name }}</template>
       <div v-for="(item,index) in selectModel.calculateModel.calculate_model">
         <el-menu-item :index="item.id" @click="toSelectModel(item)">{{ item.model_name }}</el-menu-item>
       </div>
     </el-sub-menu>
+
     <div class="flex-grow"/>
     <el-menu-item index="/backend/compute_model">
       后台
@@ -54,6 +55,9 @@ const toSelectModel = async (item) => {
   // console.log('typeNavList',selectModel.typeNavList)
   // 组件通信，更改侧边导航栏数据
   my_mitt.emit("sideBarData", selectModel.typeNavList)
+  my_mitt.emit("changeFlag", {
+    flag:true,
+  })
 }
 
 onMounted(async () => {

@@ -5,11 +5,12 @@
         <template #title>
           {{ item.substance_name }}
         </template>
-<!--        <el-menu-item-group>-->
-          <!--          <template #title>物质分类</template>-->
-          <div v-for="(category_item,index) in item.category.category">
+        <div v-for="(category_item,index) in item.category.category">
+          <div v-if="isShowCategory(item.substance_name,category_item.category_name)">
             <el-sub-menu :index="category_item.id">
-              <template #title>{{ category_item.category_name }}</template>
+              <template #title>
+                {{ category_item.category_name }}
+              </template>
               <div v-for="(Property_item,index) in category_item.Property.Property">
                 <el-menu-item :index="Property_item.id"
                               @click="toFormTable(item.substance_name,category_item.category_name,Property_item)">
@@ -18,7 +19,15 @@
               </div>
             </el-sub-menu>
           </div>
-<!--        </el-menu-item-group>-->
+          <div v-if="!isShowCategory(item.substance_name,category_item.category_name)">
+            <div v-for="(Property_item,index) in category_item.Property.Property">
+              <el-menu-item :index="Property_item.id"
+                            @click="toFormTable(item.substance_name,category_item.category_name,Property_item)">
+                {{ Property_item.property_name }}
+              </el-menu-item>
+            </div>
+          </div>
+        </div>
       </el-sub-menu>
     </div>
   </el-menu>
@@ -27,22 +36,39 @@
 <script setup>
 import my_mitt from "@/utils/Mitt/my_mitt.js"
 import {ref} from "vue";
+import {useRouter} from "vue-router";
 
-const property = ref('结合常数(β-CD)')
+const router = useRouter()
 
-
-// todo 请求后台接口，获取导航栏数据
+// 请求后台接口，获取导航栏数据
 let typeNav = ref({})
+let currentPropertyId = ref()
+const isShowCategory = (substance_name, category_name) => {
+  return substance_name !== category_name;
+}
 
-const typeNavList = ref([])
-const toFormTable = (substance_name, category_name, Property_item) => {
-  let data = {
-    'substance_name': substance_name,
-    'category_name': category_name,
-    'Property_item': Property_item
+const toFormTable = async (substance_name, category_name, Property_item) => {
+  my_mitt.emit("ChangePropertyFlag",{
+    Property_flag:false
+  })
+  console.log('***', substance_name, category_name, Property_item)
+  if (currentPropertyId.value !== Property_item.id) {
+    let data = {
+      'substance_name': substance_name,
+      'category_name': category_name,
+      'Property_item': Property_item
+    }
+    currentPropertyId.value = Property_item.id
+    // router.push({path: key})
+    if (substance_name === category_name) {
+      // 路径单一
+      await router.push({
+        path: `${category_name}`,
+        query: {substance_name: substance_name, property_name: Property_item.property_name}
+      })
+      my_mitt.emit("selectProperty", data)
+    }
   }
-  // 向表单组件传递内容
-  my_mitt.emit("selectProperty", data)
 }
 
 my_mitt.on("sideBarData", data => {

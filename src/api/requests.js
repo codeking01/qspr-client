@@ -8,8 +8,8 @@ const requests = axios.create({
   //配置对象
   //基础路径，发请求的时候，路径会出现api
   baseURL: '/api',
-  // 配置请求超时时间，5s
-  timeout: 5000,
+  // 配置请求超时时间，50s
+  timeout: 50000,
 })
 //请求拦截器
 requests.interceptors.request.use((config)=>{
