@@ -1,6 +1,6 @@
 <template>
   <type-nav/>
-  <el-container class="layout-container-demo" style="height: 600px">
+  <el-container class="layout-container-demo" style="height: 630px">
       <el-aside width="180px" v-show="flag">
         <el-scrollbar>
           <side-bar/>
@@ -9,7 +9,7 @@
       <el-container>
         <el-main>
           <form-table  v-show="!flag"/>
-          <div  v-show="Property_flag">
+          <div  v-show="Property_flag&&flag">
             请选择左侧需要计算的预测属性！
           </div>
           <router-view/>
