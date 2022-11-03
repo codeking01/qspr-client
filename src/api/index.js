@@ -42,7 +42,7 @@ export const getPropertyList = (id) =>
 // 计算饱和蒸汽压
 export const getSaturatedVaporPressure = (data) =>
     requests({
-        url: `/OrganicMatter/SaturatedVaporPressure`,
+        url: `/QsprOrganicMatter/SaturatedVaporPressure`,
         method: 'POST',
         data
     }).then((response) => {
@@ -54,7 +54,7 @@ export const getSaturatedVaporPressure = (data) =>
 // 计算临界温度，体积，压力 PVT
 export const getPVT = (data,compute_property) =>
     requests({
-        url: `/OrganicMatter/PVT?compute_property=${compute_property}`,
+        url: `/GcOrganicMatter/PVT?compute_property=${compute_property}`,
         method: 'POST',
         data
     }).then((response) => {

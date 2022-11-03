@@ -8,7 +8,7 @@
       </el-aside>
       <el-container>
         <el-main>
-          <form-table  v-show="!flag"/>
+          <show-home  v-show="!flag"/>
           <div  v-show="Property_flag&&flag">
             请选择左侧需要计算的预测属性！
           </div>
@@ -22,7 +22,7 @@
 <script setup>
 import TypeNav from "@/components/TypeNav/index.vue";
 import SideBar from "@/components/SideBar/index.vue";
-import FormTable from "@/components/FormTable/index.vue";
+import ShowHome from "@/components/ShowHome/index.vue";
 import {ref} from "vue";
 import my_mitt from "@/utils/Mitt/my_mitt.js";
 const flag = ref(false)

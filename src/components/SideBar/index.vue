@@ -39,7 +39,7 @@ import {ref} from "vue";
 import {useRouter} from "vue-router";
 
 const router = useRouter()
-
+const current_compute_model=ref()
 // 请求后台接口，获取导航栏数据
 let typeNav = ref({})
 let currentPropertyId = ref()
@@ -56,15 +56,16 @@ const toFormTable = async (substance_name, category_name, Property_item) => {
     let data = {
       'substance_name': substance_name,
       'category_name': category_name,
-      'Property_item': Property_item
+      'Property_item': Property_item,
+      'current_compute_model':current_compute_model.value
     }
     currentPropertyId.value = Property_item.id
     // router.push({path: key})
     if (substance_name === category_name) {
       // 路径单一
       await router.push({
-        path: `${category_name}`,
-        query: {substance_name: substance_name, property_name: Property_item.property_name}
+        path: `/${current_compute_model.value}/${substance_name}`,
+        query: {category_name: category_name, property_name: Property_item.property_name}
       })
       my_mitt.emit("selectProperty", data)
     }
@@ -72,7 +73,8 @@ const toFormTable = async (substance_name, category_name, Property_item) => {
 }
 
 my_mitt.on("sideBarData", data => {
-  typeNav.value = data.Substance
+  typeNav.value = data.typeNavList.Substance
+  current_compute_model.value=data.item.model_name
 })
 
 </script>

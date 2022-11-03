@@ -54,7 +54,11 @@ const toSelectModel = async (item) => {
   selectModel.typeNavList = calculateModel.typeNavList
   // console.log('typeNavList',selectModel.typeNavList)
   // 组件通信，更改侧边导航栏数据
-  my_mitt.emit("sideBarData", selectModel.typeNavList)
+  let data = {
+    typeNavList: selectModel.typeNavList,
+    item: item
+  }
+  my_mitt.emit("sideBarData", data)
   my_mitt.emit("changeFlag", {
     flag:true,
   })

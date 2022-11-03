@@ -11,10 +11,17 @@ const routes = [
         ]
     },
     {
-        path: '/常规有机物', component: () => import('@/views/GeneralOrganics/index.vue'),
+        path: '/QSPR', component: () => import('@/views/QSPR/index.vue'),
+        children: [
+            {path: '/QSPR/常规有机物', component: () => import ('@/views/QSPR/GeneralOrganics/index.vue')},
+            {path: '/QSPR/环糊精', component: () => import('@/views/QSPR/Cyclodextrin/index.vue'),},
+        ]
     },
     {
-        path: '/环糊精', component: () => import('@/views/Cyclodextrin/index.vue'),
+        path: '/GC', component: () => import('@/views/GC/index.vue'),
+        children: [
+            {path: '/GC/常规有机物', component: () => import ('@/views/GC/GeneralOrganics/index.vue')},
+        ]
     },
     {path: '/SaturatedVaporPressure', component: () => import('@/components/Upload/Upload.vue')},
     {path: '/upload', component: () => import('@/components/Upload/Upload.vue')},

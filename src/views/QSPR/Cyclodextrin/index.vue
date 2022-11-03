@@ -4,8 +4,8 @@
 </template>
 
 <script setup>
-import CyclodextrinAlpha from "@/views/Cyclodextrin/CyclodextrinAlpha.vue"
-import CyclodextrinBeta from "@/views/Cyclodextrin/CyclodextrinBeta.vue"
+import CyclodextrinAlpha from "@/views/QSPR/Cyclodextrin/CyclodextrinAlpha.vue"
+import CyclodextrinBeta from "@/views/QSPR/Cyclodextrin/CyclodextrinBeta.vue"
 import {useRouter} from "vue-router";
 import {computed} from "vue";
 
