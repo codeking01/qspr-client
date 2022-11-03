@@ -20,8 +20,6 @@ backendRouter = computed(() => {
 const isShow = (backend) => {
   return backendRouter.value === backend
 }
-
-console.log()
 </script>
 
 <style scoped>

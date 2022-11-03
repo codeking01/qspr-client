@@ -1,7 +1,7 @@
 <template>
   <type-nav/>
   <el-container class="layout-container-demo" style="height: 600px">
-      <el-aside width="200px" v-show="flag">
+      <el-aside width="180px" v-show="flag">
         <el-scrollbar>
           <side-bar/>
         </el-scrollbar>

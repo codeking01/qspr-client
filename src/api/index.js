@@ -51,6 +51,18 @@ export const getSaturatedVaporPressure = (data) =>
         console.log(err)
     })
 
+// 计算临界温度，体积，压力 PVT
+export const getPVT = (data,compute_property) =>
+    requests({
+        url: `/OrganicMatter/PVT?compute_property=${compute_property}`,
+        method: 'POST',
+        data
+    }).then((response) => {
+        return response
+    }).catch(err => {
+        console.log(err)
+    })
+
 // 计算环糊精α和β
 export const getCyclodextrin = (compute_model,data) =>
     requests({

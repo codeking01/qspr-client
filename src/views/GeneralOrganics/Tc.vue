@@ -5,19 +5,10 @@
         <template #header>
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>{{ TableProperty.category }}</el-breadcrumb-item>
-<!--            <el-breadcrumb-item>{{ TableProperty.property }}</el-breadcrumb-item>-->
             <el-breadcrumb-item>{{ TableProperty.model }}</el-breadcrumb-item>
           </el-breadcrumb>
         </template>
         <el-form ref="formRef" :model="add_form" label-width="80px" size="default" label-position="right">
-          <el-form-item label="沸点" prop="boiling_point" :rules="rules">
-            <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"
-                      input-style="width :150px"/>
-          </el-form-item>
-          <el-form-item label="温度" prop="temperature" :rules="rules">
-            <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
-                      input-style="width :150px"/>
-          </el-form-item>
 
           <!--上传gjf是每个模型都必须的 -->
           <el-form-item class="upload-button" style="text-align: left" label="gjf文件">
@@ -56,15 +47,9 @@
               :limit="1"
               border
           >
-            <el-descriptions-item label="沸点（Kpa）">
-              {{ Pred_result.boiling_point }}
-            </el-descriptions-item>
-            <el-descriptions-item label="温度（Kpa）">
-              {{ Pred_result.temperature }}
-            </el-descriptions-item>
             <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
             <el-descriptions-item label="结果">
-              {{ Pred_result.p_cul }}
+              {{ Pred_result.p_cul}}
             </el-descriptions-item>
           </el-descriptions>
         </div>
@@ -78,12 +63,9 @@ import {inject, onMounted, reactive, ref, watch} from 'vue'
 import {ElMessage, genFileId} from 'element-plus'
 import {throttle} from 'lodash';
 import my_mitt from "@/utils/Mitt/my_mitt.js";
-import {getSaturatedVaporPressure} from "@/api/index.js";
+import {getPVT} from "@/api/index.js";
 
 let TableProperty = reactive({
-  // 'category': '',
-  // 'property': '',
-  // 'model': '',
   'compute_property': [],
 })
 
@@ -141,10 +123,7 @@ const submitForm = throttle((formEl) => {
   formEl.validate(async (valid) => {
     if (valid) {
       if (fd.get('file') !== null) {
-        Pred_result.value = await getSaturatedVaporPressure(fd)
-        // 显示结果
-        // Pred_result.value =  await getCyclodextrin(1,fd)
-        // console.log('Pred_result.value',Pred_result.value)
+        Pred_result.value =  await getPVT(fd,'Tc')
       } else {
         ElMessage.error('请选择上传文件！');
       }
@@ -200,7 +179,6 @@ onMounted(() => {
 
 .box-card {
   margin: 5px 5px;
-  /*width: 800px;*/
   height: 585px;
 }
 </style>
