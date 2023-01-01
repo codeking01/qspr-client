@@ -1,5 +1,9 @@
 <template>
-  <el-menu :default-openeds="['', ]" unique-opened show-timeout="10">
+  <el-menu :default-openeds="['', ]"
+           unique-opened show-timeout="10"
+           active-text-color="red"
+  >
+    <!--background-color="#545c64"-->
     <div v-for="(item,index) in typeNav">
       <el-sub-menu :index="item.id">
         <template #title>

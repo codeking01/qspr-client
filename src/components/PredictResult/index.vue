@@ -8,17 +8,17 @@
         :limit="1"
         border
     >
-      <el-descriptions-item label="沸点（Kpa）" v-if="isShow('boiling_point')">
+      <el-descriptions-item label="沸点（K）" v-if="isShow('boiling_point')">
         {{ Pred_result.boiling_point }}
       </el-descriptions-item>
-      <el-descriptions-item label="温度（Kpa）" v-if="isShow('temperature')">
+      <el-descriptions-item label="温度（K）" v-if="isShow('temperature')">
         {{ Pred_result.temperature }}
       </el-descriptions-item>
-      <el-descriptions-item label="压力（Kpa）" v-if="isShow('pressure')">
+      <el-descriptions-item label="压力（KPa）" v-if="isShow('pressure')">
         {{ Pred_result.pressure }}
       </el-descriptions-item>
       <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
-      <el-descriptions-item label="结果">
+      <el-descriptions-item label="结果(kPa)">
         {{ Pred_result.p_cul }}
       </el-descriptions-item>
     </el-descriptions>

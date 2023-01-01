@@ -11,14 +11,15 @@
         </template>
         <el-form ref="formRef" :model="add_form" label-width="80px" size="default" label-position="right">
           <el-form-item label="沸点" prop="boiling_point" :rules="rules">
-            <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"
+            <el-input v-model.number="add_form.boiling_point" type="text" autocomplete="off"  placeholder="单位（K）"
                       input-style="width :150px"/>
+            <el-space type="primary" style="margin-left: 28px" size="small" class="selectModel">K</el-space>
           </el-form-item>
           <el-form-item label="温度" prop="temperature" :rules="rules">
-            <el-input v-model.number="add_form.temperature" type="text" autocomplete="off"
+            <el-input v-model.number="add_form.temperature" type="text" autocomplete="off" placeholder="单位（K）"
                       input-style="width :150px"/>
+            <el-space type="primary" style="margin-left: 28px" size="small" class="selectModel">K</el-space>
           </el-form-item>
-
           <!--上传gjf是每个模型都必须的 -->
           <el-form-item class="upload-button" style="text-align: left" label="gjf文件">
             <el-upload
@@ -56,14 +57,14 @@
               :limit="1"
               border
           >
-            <el-descriptions-item label="沸点（Kpa）">
+            <el-descriptions-item label="沸点（K）">
               {{ Pred_result.boiling_point }}
             </el-descriptions-item>
-            <el-descriptions-item label="温度（Kpa）">
+            <el-descriptions-item label="温度（K）">
               {{ Pred_result.temperature }}
             </el-descriptions-item>
             <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
-            <el-descriptions-item label="结果">
+            <el-descriptions-item label="结果（kPa）">
               {{ Pred_result.p_cul }}
             </el-descriptions-item>
           </el-descriptions>

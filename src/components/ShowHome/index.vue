@@ -12,7 +12,9 @@
 <!--        </el-badge>-->
         <el-carousel type="card" indicator-position="outside" :interval="8000" arrow="always" height="600px">
           <el-carousel-item v-for="(c1,index) in imgList" :key="index">
-            <img :src="c1.imgUrl" alt="轮播图信息">
+            <div style="display: flex; align-item: center">
+              <el-image :src="c1.imgUrl" alt="轮播图信息"  />
+            </div>
           </el-carousel-item>
         </el-carousel>
 <!--        <el-image :key="url" :src="url" style="width: 100%" lazy />-->
@@ -25,10 +27,10 @@
 import {onMounted} from 'vue'
 // const url=String(new URL('../../assets/images/bg.jpg',import.meta.url))
 const imgList = [
-  { imgUrl: String(new URL('../../assets/images/home_01.png',import.meta.url)) },
-  { imgUrl: String(new URL('../../assets/images/home_02.png',import.meta.url)) },
-  { imgUrl: String(new URL('../../assets/images/home_03.png',import.meta.url)) },
-  { imgUrl: String(new URL('../../assets/images/home_04.png',import.meta.url)) },
+  { imgUrl: String(new URL('../../assets/images/carousel_01.jpg',import.meta.url)) },
+  { imgUrl: String(new URL('../../assets/images/carousel_02.jpg',import.meta.url)) },
+  { imgUrl: String(new URL('../../assets/images/carousel_03.jpg',import.meta.url)) },
+  // { imgUrl: String(new URL('../../assets/images/home_04.png',import.meta.url)) },
 ]
 onMounted(() => {
   // console.log('**',url)

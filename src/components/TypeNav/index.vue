@@ -1,7 +1,7 @@
 <template>
   <el-menu
       :default-active="activeIndex"
-      class="el-menu-demo"
+      class="el-menu-select"
       mode="horizontal"
       :ellipsis="false"
       @select="handleSelect"
@@ -11,13 +11,23 @@
     <!--    <el-menu-item index="/">
       QSPR-LAB
     </el-menu-item>-->
-    <el-sub-menu index="#">
+    <!--2022.12.29 之前的设置-->
+    <!--<el-sub-menu index="#">
       <template #title>{{ selectModel.Name }}</template>
       <div v-for="(item,index) in selectModel.calculateModel.calculate_model">
         <el-menu-item :index="item.id" @click="toSelectModel(item)">{{ item.model_name }}</el-menu-item>
       </div>
-    </el-sub-menu>
-
+    </el-sub-menu>-->
+    <el-dropdown split-button type="primary" size="large" class="selectModel">
+      {{ selectModel.Name }}
+      <template #dropdown>
+        <el-dropdown-menu>
+          <div v-for="(item,index) in selectModel.calculateModel.calculate_model">
+            <el-dropdown-item :index="item.id" @click="toSelectModel(item)">{{ item.model_name }}</el-dropdown-item>
+          </div>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
     <div class="flex-grow"/>
     <el-menu-item index="/backend/compute_model">
       后台
@@ -71,7 +81,12 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="less">
-
+.el-menu-select{
+  vertical-align:middle;
+}
+.selectModel {
+  margin-top: 8px;
+}
 .flex-grow {
   flex-grow: 1;
 }

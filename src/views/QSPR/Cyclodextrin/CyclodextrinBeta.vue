@@ -47,7 +47,7 @@
               border
           >
             <el-descriptions-item label="选择的文件">{{ Pred_result.file_name }}</el-descriptions-item>
-            <el-descriptions-item label="结果">
+            <el-descriptions-item label="结果（kPa）">
               {{ Pred_result.p_cul['beta_cul'] }}
             </el-descriptions-item>
           </el-descriptions>
